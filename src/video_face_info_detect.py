@@ -23,6 +23,8 @@ import tensorflow as tf
 import scipy.misc
 import facenet
 import time
+import argparse
+import pygame
 
 
 ############FLAGS#############
@@ -111,8 +113,20 @@ meanshift = 0
 
 
 # starting video streaming
-video_capture = cv2.VideoCapture(1)
+parser = argparse.ArgumentParser(description='camera select')
+parser.add_argument('--cam', type=int, default = 0)
+args = parser.parse_args()
+
+soundpath=r'../sound/dendendong.mp3'
+pygame.mixer.init()
+print("sound initialized!")
+track = pygame.mixer.music.load(soundpath)
+pygame.mixer.music.play()
+time.sleep(3)
+pygame.mixer.music.stop()
+video_capture = cv2.VideoCapture(args.cam)
 while True:
+    time.sleep(0.3)
 
     bgr_image = video_capture.read()[1]
     gray_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2GRAY)
@@ -148,11 +162,13 @@ while True:
                                             useMeanshiftGrouping=meanshift)
         status="sit"
         for(x, y, w, h) in rects:
-            cv2.rectangle(bgr_body, (x, y), (x+w, y+h), (0,200,255), 2)
-            cv2.imwrite("../outputs/peoplestand.jpg",bgr_body)
-            print(x,y,w,h)
+            
+            
             if w>0 and (w*h)>0.3*(gray_body.shape[0]*gray_body.shape[1]):
                 status="stand"
+                print(x,y,w,h)
+                cv2.rectangle(bgr_body, (x, y), (x+w, y+h), (0,200,255), 2)
+                cv2.imwrite("../outputs/peoplestand.jpg",bgr_body)
                 
 
 
@@ -180,6 +196,9 @@ while True:
                 if dist<0.7:
                     op_sample=1
                     print("sample_succeed!")
+                    pygame.mixer.music.play()
+                    time.sleep(3)
+                    pygame.mixer.music.stop()
                     time.sleep(5)
                 else:
                     sample_time=0
@@ -200,7 +219,7 @@ while True:
         else:
            
             
-
+            
             if image2.shape[0]>0:
                 #image2 = cv2.cvtColor(image2, cv2.COLOR_RGB2BGR)
                 image2 = cv2.resize(image2, (image_size, image_size), interpolation=cv2.INTER_CUBIC)
@@ -309,5 +328,9 @@ while True:
         break
     if end_detect==5:
         cv2.imwrite("../outputs/result.jpg",bgr_image)
+       
         print("detect finished!")
         break
+pygame.mixer.music.play()
+time.sleep(3)
+pygame.mixer.music.stop()
