@@ -179,7 +179,7 @@ while True:
         if op_sample==0:
             if sample_time>7:
                 image1 = scipy.misc.imread(image_name1, mode='RGB')
-                image1 = cv2.resize(image1, (image_size, image_size), interpolation=cv2.INTER_CUBIC)
+                image1 = cv2.resize('../outputs/operator2.jpg', (image_size, image_size), interpolation=cv2.INTER_CUBIC)
                 image1 = facenet.prewhiten(image1)
 
                 image2 = cv2.resize(image2, (image_size, image_size), interpolation=cv2.INTER_CUBIC)
@@ -195,6 +195,7 @@ while True:
                 scaled_reshape.clear()
                 if dist<0.7:
                     op_sample=1
+                    cv2.imwrite('../outputs/operator.jpg',bgr_image[y1:y2,x1:x2])
                     print("sample_succeed!")
                     pygame.mixer.music.play()
                     time.sleep(3)
@@ -205,7 +206,7 @@ while True:
                     print("sample_failed!")
                 
             else:
-                cv2.imwrite('../outputs/operator.jpg',bgr_image[y1:y2,x1:x2])
+                cv2.imwrite('../outputs/operator2.jpg',bgr_image[y1:y2,x1:x2])
                 print("operator_sampled!")
                 sample_time=sample_time+1
                 time.sleep(0.5)
