@@ -43,7 +43,9 @@ retry=0       #回退人数
 image_size = 200 #don't need equal to real image size, but this value should not small than this
 modeldir = '../downloaded_models/20170512-110547/20170512-110547.pb' #change to your model dir
 
-image_name1 = '../outputs/operator.jpg' #change to your image name
+image_name1 = '../outputs/operator2.jpg' #change to your image name
+
+image_name2 = '../outputs/operator.jpg' #change to your image name
 print('build facenet embedding model')
 tf.Graph().as_default()
 sess = tf.Session()
@@ -179,7 +181,7 @@ while True:
         if op_sample==0:
             if sample_time>7:
                 image1 = scipy.misc.imread(image_name1, mode='RGB')
-                image1 = cv2.resize('../outputs/operator2.jpg', (image_size, image_size), interpolation=cv2.INTER_CUBIC)
+                image1 = cv2.resize(image1, (image_size, image_size), interpolation=cv2.INTER_CUBIC)
                 image1 = facenet.prewhiten(image1)
 
                 image2 = cv2.resize(image2, (image_size, image_size), interpolation=cv2.INTER_CUBIC)
@@ -218,6 +220,9 @@ while True:
 
         #matching
         else:
+            image1 = scipy.misc.imread(image_name2, mode='RGB')
+            image1 = cv2.resize(image1, (image_size, image_size), interpolation=cv2.INTER_CUBIC)
+            image1 = facenet.prewhiten(image1)
            
             
             
