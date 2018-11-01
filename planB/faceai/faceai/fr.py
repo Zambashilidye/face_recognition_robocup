@@ -34,11 +34,9 @@ r = rospy.Rate(rate)
 
 
 
-###################################################
+##-------------------------------
 ## in[1] 记忆
-
 sizeThreshold=200
-
 path = "img/face_recognition"
 total=os.listdir(path)
 fileNum = len(total)
@@ -48,68 +46,78 @@ cap.set(3,1920) #
 cap.set(4,1080)
 #startTime = datetime.datetime.now()
 startTime=time.time()
-#'''
-while (1):
+takeTime=[10,15,20,25]
+runTime=round(time.time()-startTime,2)
+waitTime=round(time.time()-startTime-takeTime[0],2)
+while (fileNum<3):
     ret, frame = cap.read()
     total=os.listdir(path)
     fileNum = len(total)
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  # 转换灰色
+
+    runTime=round(time.time()-startTime,2)
+    waitTime=round(time.time()-startTime,2)
+    text=str(runTime)
+
+    cv2.putText(frame,"Time "+text, (10,100),cv2.FONT_HERSHEY_COMPLEX, 2.0, (0,0, 255), 2)#FONT_HERSHEY_SIMPLEX
     classifier = cv2.CascadeClassifier("./haarcascade_frontalface_default.xml")
     #img2 = np.zeros((img.shape[0],img.shape[1],3), np.uint8) 
     color = (0, 255, 0)  # 定义绘制颜色
     # 调用识别人脸
     faceRects = classifier.detectMultiScale(
         gray, scaleFactor=1.2, minNeighbors=3, minSize=(32, 32))
-    runTime=time.time()-startTime
     if len(faceRects)==1:  # 大于0则检测到人脸
         for faceRect in faceRects:  # 单独框出每一张人脸
             x, y, w, h = faceRect
             roi_color = frame[y:y+h, x:x+w]
             # 框出人脸
+            y=y-h/4
+            h=h+h/4
+            cv2.rectangle(frame, (x, y), (x + w, y +h), color, 2)
+            waitTime=round(time.time()-startTime-takeTime[0],2)
+            #text=str(runTime)
             
-            cv2.rectangle(frame, (x, y), (x + w, y + 5*h/4), color, 2)
-            runTime=time.time()-startTime+5
-            text=str(runTime)
-            cv2.putText(frame,"Time "+text, (10,100),cv2.FONT_HERSHEY_COMPLEX, 2.0, (0,0, 255), 2)#FONT_HERSHEY_SIMPLEX
-            if runTime<10:
-                text=str(runTime)
-                cv2.putText(frame,"First photo,"+text, (10,y - 6), cv2.FONT_HERSHEY_TRIPLEX, 1.0, (255,0, 0), 1)
-            elif runTime<15 and fileNum==0 :
-                #print
-                text=str(runTime)
-                #print(file)
+            if runTime<takeTime[0]:
+                runTime=round(time.time()-startTime,2)
+                waitTime=round(runTime-takeTime[0],2)
+                text=str(waitTime)
+                cv2.putText(frame,"First ,"+text, (x,y - 6), cv2.FONT_HERSHEY_TRIPLEX, 1.0, (255,255, 255), 1)
+            elif runTime<takeTime[1] and fileNum==0 :
+                runTime=round(time.time()-startTime,2)
+                waitTime=round(runTime-takeTime[0],2)
+                #text=str(waitTime)
+                cv2.imwrite('img/face_recognition/operator'+str(fileNum+1)+'.jpg',frame[y:y+h, x:x+w])
+                cv2.putText(frame,"Second "+str(waitTime), (x + 6,y - 6), cv2.FONT_HERSHEY_TRIPLEX, 1.0, (255,255, 0), 1)
+                print('1: '+text)
+                cv2.imshow("image", frame)
+                time.sleep(0.5)
+            elif runTime<takeTime[2] and runTime>takeTime[1] and fileNum==1:
+                runTime=round(time.time()-startTime,2)
+                waitTime=round(runTime-takeTime[0],2)
+                text=str(waitTime)
                 cv2.imwrite('img/face_recognition/operator'+str(fileNum+1)+'.jpg',frame[y:y+h, x:x+w])
                 #cv2.imwrite('img/face_recognition/operator.jpg',frame)#[y:y+h, x:x+w])
-                cv2.putText(frame,"OK "+text, (x + 6,y - 6), cv2.FONT_HERSHEY_TRIPLEX, 1.0, (255,0, 0), 1)
-                print('ok')
+                cv2.putText(frame,"Third "+text, (x + 6,y - 6), cv2.FONT_HERSHEY_TRIPLEX, 1.0, (255,255, 255), 1)
+                print('2: '+str(runTime))
                 cv2.imshow("image", frame)
                 time.sleep(0.5)
-            elif runTime<20 and fileNum==1:
-                #print
-                text=str(runTime)
-                #print(file)
-                cv2.imwrite('img/face_recognition/operator'+str(fileNum+1)+'.jpg',frame[y-h/3:y+h, x-w/3:x+w])
-                #cv2.imwrite('img/face_recognition/operator.jpg',frame)#[y:y+h, x:x+w])
-                cv2.putText(frame,"OK "+text, (x + 6,y - 6), cv2.FONT_HERSHEY_TRIPLEX, 1.0, (255,0, 0), 1)
-                print(text)
+            elif runTime<takeTime[3] and runTime>takeTime[2] and fileNum==2:
+                runTime=round(time.time()-startTime,2)
+                waitTime=round(runTime-takeTime[0],2)
+                text=str(waitTime)
+                cv2.imwrite('img/face_recognition/operator'+str(fileNum+1)+'.jpg',frame[y:y+h, x:x+w])
+                cv2.putText(frame,"Ok"+text, (x + 6,y - 6), cv2.FONT_HERSHEY_TRIPLEX, 1.0, (255,0, 0), 1)
+                print('3: '+str(runTime))
                 cv2.imshow("image", frame)
                 time.sleep(0.5)
-            elif runTime<25 and fileNum==2:
-                #print
-                text=str(runTime)
-                #print(file)
-                cv2.imwrite('img/face_recognition/operator'+str(fileNum+1)+'.jpg',frame[y-h/3:y+h, x-w/3:x+w])
-                #cv2.imwrite('img/face_recognition/operator.jpg',frame)#[y:y+h, x:x+w])
-                cv2.putText(frame,"OK "+text, (x + 6,y - 6), cv2.FONT_HERSHEY_TRIPLEX, 1.0, (255,0, 0), 1)
-                print(text)
-                cv2.imshow("image", frame)
-                time.sleep(0.5)
-            else:
-                text=str(runTime)
-                cv2.putText(frame,"Now "+text, (x + 6,y - 6), cv2.FONT_HERSHEY_TRIPLEX, 1.0, (255,0, 0), 1)
+                break
+            elif fileNum==3:
+                #text=str(runTime)
+                cv2.putText(frame,"All Photo Taken", (x + 6,y - 6), cv2.FONT_HERSHEY_TRIPLEX, 1.0, (255,0, 0), 1)
+                break
             
     cv2.imshow("image", frame)  # 显示图像
-    if cv2.waitKey(1) & 0xFF == ord('q') or runTime>30:
+    if cv2.waitKey(1) & 0xFF == ord('q'):
         #cv2.imwrite('./img/face_recognition/operator'+str(n)+'.png',frame[])
         break
 #'''
@@ -125,29 +133,34 @@ cv2.destroyAllWindows()
 
 ########################################################
 ## in[2] 转动
-for i in range(2):
-    move_cmd = Twist()
-    rospy.sleep(1)
-    
-    move_cmd.angular.z = angular_speed
-    ticks = int(goal_angle * rate)
-    for t in range(ticks):           
-        self.cmd_vel.publish(move_cmd)
-        r.sleep()
+
+'''
+move_cmd = Twist()
+rospy.sleep(1)
+
+move_cmd.angular.z = angular_speed
+ticks = int(goal_angle * rate)*2
+print("ticks:"+str(ticks))
+for t in range(ticks):           
+    cmd_vel.publish(move_cmd)
+    r.sleep()
         
     # Stop the robot before the next leg
-    move_cmd = Twist()
-    cmd_vel.publish(move_cmd)
-    rospy.sleep(1)    
+
+    #cmd_vel.publish(move_cmd)  
     
 # Stop the robot
-self.cmd_vel.publish(Twist())
-
+cmd_vel.publish(Twist())
+'''
 
 #######################################################
 ##in[3]  识别  ##
-
-
+'''
+if os.path.exists("photo.jpg"):
+    os.remove("photo.jpg")
+if os.path.exists("seu.jpg"):
+    os.remove("seu.jpg")
+'''
 startTime=time.time()
 path = "img/face_recognition"  # 模型数据图片目录
 cap = cv2.VideoCapture(1)
@@ -188,8 +201,9 @@ emotion_labels = {
 
 ret, frame = cap.read()
 time.sleep(2)
+
 ret,frame=cap.read()
-cv2.imwrite('photo.jpg',frame)
+#cv2.imwrite('photo.jpg',frame)
 cap.release()
 
 frame=cv2.imread('photo.jpg')
@@ -201,17 +215,6 @@ gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 #Find operator
 face_locations = face_recognition.face_locations(frame)
 face_encodings = face_recognition.face_encodings(frame, face_locations)
-'''
-for (x, y, w, h) in faces:
-    face = img[(y - 60):(y + h + 60), (x - 30):(x + w + 30)]
-    face = cv2.resize(face, (48, 48))
-    face = np.expand_dims(face, 0)
-    face = face / 255.0
-    gender_label_arg = np.argmax(gender_classifier.predict(face))
-    gender = gender_labels[gender_label_arg]
-    cv2.rectangle(img, (x, y), (x + w, y + h), color, 2)
-    img = chineseText.cv2ImgAddText(img, gender, x + h, y, color, 30)
-'''
 # 在这个视频帧中循环遍历每个人脸
 for (top, right, bottom, left), face_encoding in zip(
         face_locations, face_encodings):
@@ -223,10 +226,10 @@ for (top, right, bottom, left), face_encoding in zip(
     #y+h=    bottom
     #x+w=    right
     
-    # 画出一个框，框住脸
-    cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
-    # 画出一个带名字的标签，放在框下
-    cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (255, 255, 255),cv2.FILLED)
+    # 框脸
+    #cv2.rectangle(frame, (left, top+h/4), (right, bottom+h/5), (0, 0, 200), 2)
+    # 标签
+    #cv2.rectangle(frame, (left, bottom), (right, bottom+h/5+30), (200, 200, 200),cv2.FILLED)
 
     gray_face = gray[(top):(bottom), (left):(right)]
     gray_face = cv2.resize(gray_face, (48, 48))
@@ -235,31 +238,24 @@ for (top, right, bottom, left), face_encoding in zip(
     gray_face = np.expand_dims(gray_face, -1)
     emotion_label_arg = np.argmax(emotion_classifier.predict(gray_face))
     emotion = emotion_labels[emotion_label_arg]
-    cv2.putText(frame, emotion, (left, bottom +20), cv2.FONT_HERSHEY_TRIPLEX, 1.0,
-                (0, 0, 255), 1)
+    cv2.putText(frame, emotion, (left+5, bottom +40), cv2.FONT_HERSHEY_TRIPLEX, 1.0,
+                (0, 100, 100), 1)
 
-    ####################
-
-
-
-
-    #print(top,type(top),int(top))
-    #print((int(top) - 60),(int(bottom) + 60), (int(right) - 30),(int(left) + 30))
+    # gender
     print(frame.shape)
-    #face = frame[(int(top) - 60):(int(bottom) + 60), (int(right) - 30):(int(left) + 30)]
     face = frame[top-60:bottom+60, left-60:right+60]
-    cv2.imwrite('facetmp.jpg',face)
+    #face = frame[top-h/3:bottom+h/3, left-w/3:right+w/3]  
+    cv2.imwrite('faceOperator.jpg',face)
     face = cv2.resize(face, (48, 48))
     face = np.expand_dims(face, 0)
     face = face / 255.0
     gender_label_arg = np.argmax(gender_classifier.predict(face))
     gender = gender_labels[gender_label_arg]
-    cv2.rectangle(frame, (left, top), (right, bottom),(0,255,255), 2)
-    cv2.putText(frame, gender, (left , bottom ), cv2.FONT_HERSHEY_TRIPLEX, 1.0,
-                (0, 0, 255), 1)
-    #img = chineseText.cv2ImgAddText(img, gender, x + h, y, color, 30)
+    #cv2.rectangle(frame, (left, top), (right, bottom),(0,255,255), 2)
+    cv2.putText(frame, gender, (left+5, bottom+20 ), cv2.FONT_HERSHEY_TRIPLEX, 1.0,
+                (100, 100, 0), 1)
     
-    # 看看面部是否与已知人脸相匹配。
+    # operator
     for i, v in enumerate(total_face_encoding):
         match = face_recognition.compare_faces(
             [v], face_encoding, tolerance=0.5)
@@ -268,20 +264,17 @@ for (top, right, bottom, left), face_encoding in zip(
             name = total_image_name[i]
             break
 
-    # 画出一个框，框住脸
-    #cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
-    # 画出一个带名字的标签，放在框下
     #cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (255, 255, 255),cv2.FILLED)
     font = cv2.FONT_HERSHEY_TRIPLEX
-    cv2.putText(frame, name, (left , bottom+40), cv2.FONT_HERSHEY_TRIPLEX, 1.0,
-                (0, 0, 255), 1)
+    cv2.putText(frame, name, (left+5 , bottom+60), cv2.FONT_HERSHEY_TRIPLEX, 1.0,
+                (0, 0, 100), 1)
 
 
-#image = face_recognition.load_image_file("img/ag.png")
-image=frame
+image = face_recognition.load_image_file("photo.jpg")
+
 #查找图像中所有面部的所有面部特征
 face_landmarks_list = face_recognition.face_landmarks(image)
-
+print("face_load ")
 for face_landmarks in face_landmarks_list:
     facial_features = [
         'chin',  # 下巴  type(face_landmarks_list[0]['nose_tip'])
@@ -299,13 +292,27 @@ for face_landmarks in face_landmarks_list:
     pil_image = Image.fromarray(image)
     d = ImageDraw.Draw(pil_image)
     for facial_feature in facial_features:
-        if facial_feature=='right_eye':
-            d.line(face_landmarks[facial_feature], fill=(255, 0, 0), width=2)
-        else:
-            d.line(face_landmarks[facial_feature], fill=(255, 255, 255), width=2)
-    pil_image.show()
 
-os.system("paplay BEEP1.WAV")
+        cnt=np.array(face_landmarks[facial_feature])
+        left=np.min(cnt, axis=0)[0]
+        top=np.min(cnt, axis=0)[1]
+        right=np.max(cnt, axis=0)[0]
+        bottom=np.max(cnt, axis=0)[1]
+        if facial_feature=="chin":
+            left=(2*left+right)/3  #l+(r-l)/3
+            top=(3*top+bottom)/3 #t+(b-t)/2
+            right=(2*left+left)/3
+            #bottom=np.max(cnt, axis=0)[1]
+
+        cv2.rectangle(frame,(left-5,top-5),(right+5,bottom+5),(200,200,200),1)
+        #if facial_feature=='right_eye':
+        #    d.line(face_landmarks[facial_feature], fill=(255, 0, 0), width=2)
+        #else:
+        #    d.line(face_landmarks[facial_feature], fill=(255, 255, 255), width=2)
+    #pil_image.show()
+#x,y,w,h = cv2.boundingRect(cnt)
+#img = cv2.rectangle(img,(x,y),(x+w,y+h),(0,255,0),2)
+
 cv2.imwrite('seu.jpg',frame)
 endTime=time.time()
 print(endTime-startTime)

@@ -9,7 +9,6 @@ import numpy as np
 
 
 sizeThreshold=200
-
 path = "img/face_recognition"
 total=os.listdir(path)
 fileNum = len(total)
@@ -45,41 +44,45 @@ while (fileNum<3):
             roi_color = frame[y:y+h, x:x+w]
             # 框出人脸
             y=y-h/4
-            h=h+h/4
+            h=h+h/3
             cv2.rectangle(frame, (x, y), (x + w, y +h), color, 2)
             waitTime=round(time.time()-startTime-takeTime[0],2)
             #text=str(runTime)
             
             if runTime<takeTime[0]:
-                waitTime=round(time.time()-startTime-takeTime[0],2)
+                runTime=round(time.time()-startTime,2)
+                waitTime=round(runTime-takeTime[0],2)
                 text=str(waitTime)
-                cv2.putText(frame,"First photo,"+text, (x,y - 6), cv2.FONT_HERSHEY_TRIPLEX, 1.0, (255,255, 0), 1)
+                cv2.putText(frame,"First ,"+text, (x,y - 6), cv2.FONT_HERSHEY_TRIPLEX, 1.0, (255,255, 255), 1)
             elif runTime<takeTime[1] and fileNum==0 :
-                waitTime=round(time.time()-startTime-takeTime[0],2)
-                text=str(waitTime)
+                runTime=round(time.time()-startTime,2)
+                waitTime=round(runTime-takeTime[0],2)
+                #text=str(waitTime)
                 cv2.imwrite('img/face_recognition/operator'+str(fileNum+1)+'.jpg',frame[y:y+h, x:x+w])
-                #cv2.imwrite('img/face_recognition/operator.jpg',frame)#[y:y+h, x:x+w])
-                cv2.putText(frame,"OK "+text, (x + 6,y - 6), cv2.FONT_HERSHEY_TRIPLEX, 1.0, (255,255, 0), 1)
+                cv2.putText(frame,"Second "+str(waitTime), (x + 6,y - 6), cv2.FONT_HERSHEY_TRIPLEX, 1.0, (255,255, 0), 1)
                 print('1: '+text)
                 cv2.imshow("image", frame)
                 time.sleep(0.5)
             elif runTime<takeTime[2] and runTime>takeTime[1] and fileNum==1:
-                waitTime=round(time.time()-startTime-takeTime[0],2)
+                runTime=round(time.time()-startTime,2)
+                waitTime=round(runTime-takeTime[0],2)
                 text=str(waitTime)
                 cv2.imwrite('img/face_recognition/operator'+str(fileNum+1)+'.jpg',frame[y:y+h, x:x+w])
                 #cv2.imwrite('img/face_recognition/operator.jpg',frame)#[y:y+h, x:x+w])
-                cv2.putText(frame,"OK "+text, (x + 6,y - 6), cv2.FONT_HERSHEY_TRIPLEX, 1.0, (255,255, 255), 1)
-                print('2: '+text)
+                cv2.putText(frame,"Third "+text, (x + 6,y - 6), cv2.FONT_HERSHEY_TRIPLEX, 1.0, (255,255, 255), 1)
+                print('2: '+str(runTime))
                 cv2.imshow("image", frame)
                 time.sleep(0.5)
             elif runTime<takeTime[3] and runTime>takeTime[2] and fileNum==2:
-                waitTime=round(time.time()-startTime-takeTime[0],2)
+                runTime=round(time.time()-startTime,2)
+                waitTime=round(runTime-takeTime[0],2)
                 text=str(waitTime)
                 cv2.imwrite('img/face_recognition/operator'+str(fileNum+1)+'.jpg',frame[y:y+h, x:x+w])
-                cv2.putText(frame,"OK "+text, (x + 6,y - 6), cv2.FONT_HERSHEY_TRIPLEX, 1.0, (255,0, 0), 1)
-                print('3: '+text)
+                cv2.putText(frame,"Ok"+text, (x + 6,y - 6), cv2.FONT_HERSHEY_TRIPLEX, 1.0, (255,0, 0), 1)
+                print('3: '+str(runTime))
                 cv2.imshow("image", frame)
                 time.sleep(0.5)
+                break
             elif fileNum==3:
                 #text=str(runTime)
                 cv2.putText(frame,"All Photo Taken", (x + 6,y - 6), cv2.FONT_HERSHEY_TRIPLEX, 1.0, (255,0, 0), 1)
