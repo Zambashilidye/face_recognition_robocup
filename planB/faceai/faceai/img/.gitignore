@@ -1,8 +1,0 @@
-<<<<<<< HEAD
-ignore everything in this directory
-=======
-gnore everything in this directory
->>>>>>> master
-*
-# Except this file
-!.gitignore
