@@ -39,43 +39,55 @@ gender_target_size = gender_classifier.input_shape[1:3]
 gender_window = []
 emotion_window = []
 
-parser = argparse.ArgumentParser(description='img')
-parser.add_argument('--img', type=str, default = '../outputs/1.jpg')
-args = parser.parse_args()
+#parser = argparse.ArgumentParser(description='img')
+#parser.add_argument('--img', type=str, default = '../outputs/1.jpg')
+#args = parser.parse_args()
+video_capture = cv2.VideoCapture(0)
 
-bgr_image=cv2.imread(args.img)
-gray_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2GRAY)
-rgb_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2RGB)
-faces = detect_faces(face_detection, gray_image) 
-img_shape=bgr_image.shape
-
-
-
-def detect_postures(x,y,w,h,img_shape):
-    
-    s_face=w*h
-    s_img=img_shape[0]*img_shape[1]
-    
-    min_d=0.2 #distance when face can cover the whole img
-    alpha=0.43 #camera angle
-    base_h=0.4 #camera base height
-
-    face_d=np.sqrt(s_img/s_face)*min_d
-    #print(math.sin(alpha))
-    face_h=face_d*math.sin(alpha)+base_h
-    result="unknown"
-    print(face_h)
-    if face_h>1.5:
-        result="stand"
-    else:
-        result="sit"
-    return result
+while True:
+    bgr_image= video_capture.read()[1]
+    gray_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2GRAY)
+    rgb_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2RGB)
+    faces = detect_faces(face_detection, gray_image) 
+    img_shape=bgr_image.shape
 
 
-for face_coordinates in faces:
-    x1, x2, y1, y2 = apply_offsets(face_coordinates, emotion_offsets)
-    x=x1
-    y=y1
-    w=x2-x1
-    h=y2-y1
-    print(detect_postures(x,y,w,h,img_shape))
+
+    def detect_postures(x,y,w,h,img_shape):
+        
+        s_face=w*h
+        s_img=img_shape[0]*img_shape[1]
+        
+        min_d=0.25 #distance when face can cover the whole img
+        alpha=0.53 #camera angle
+        base_h=0.5 #camera base height
+        
+        dif=(img_shape[1]-y)/img_shape[1]
+
+        face_d=np.sqrt(s_img/s_face)*min_d
+        #print(math.sin(alpha))
+        face_h=face_d/math.tan(alpha)*dif*+base_h
+        result="unknown"
+        print(face_h)
+        if face_h>1.47:
+            result="stand"
+        else:
+            result="sit"
+        return result
+
+
+    for face_coordinates in faces:
+        x1, x2, y1, y2 = apply_offsets(face_coordinates, (0,0))
+        x=x1
+        y=y1
+        w=x2-x1
+        h=y2-y1
+        draw_text(face_coordinates, bgr_image, detect_postures(x,y,w,h,img_shape),
+                  (0,0,0), 0, -20, 1, 1)
+        #print(detect_postures(x,y,w,h,img_shape))
+    cv2.imshow("detect",bgr_image)
+
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+cv2.destroyAllWindows()
