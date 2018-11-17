@@ -38,92 +38,90 @@ os.system("paplay 1.wav")
 
 ##-------------------------------
 ## in[1] 记忆
-path = "img/face_recognition"  
+if os.path.exists("img/face_recognition/operator1.jpg"):
+    os.remove("img/face_recognition/operator1.jpg")
+if os.path.exists("img/face_recognition/operator2.jpg"):
+    os.remove("img/face_recognition/operator2.jpg")
+if os.path.exists("img/face_recognition/operator3.jpg"):
+    os.remove("img/face_recognition/operator3.jpg")
+if os.path.exists("img/face_recognition/operator.jpg"):
+    os.remove("img/face_recognition/operator.jpg")
+sizeThreshold=200
+path = "img/face_recognition"
+total=os.listdir(path)
+fileNum = len(total)
+print(fileNum)
+frameOrigin = np.zeros((1080,1920),np.uint8)#生成一个空灰度图像
 cap = cv2.VideoCapture(0)
 cap.set(3,1920) #
 cap.set(4,1080)
-total_image_name = []
-total_face_encoding = []
-'''
-for fn in os.listdir(path):
-    print(path + "/" + fn)
-    total_face_encoding.append(face_recognition.face_encodings(face_recognition.load_image_file(path + "/" + fn))[0])
-    fn='operater'
-    total_image_name.append(fn)  #图片名字列表
-'''
-flags=False
-matchNum=0
-circle=0
-maxCircle=60
-while (matchNum<5 and circle<maxCircle):
-    circle=circle+1
+#startTime = datetime.datetime.now()
+startTime=time.time()
+takeTime=[10,15,20,30,60]
+runTime=round(time.time()-startTime,2)
+waitTime=round(time.time()-startTime-takeTime[0],2)
+while (fileNum<3):
     ret, frame = cap.read()
-    # 发现在视频帧所有的脸和face_enqcodings
-    face_locations = face_recognition.face_locations(frame)
-    face_encodings = face_recognition.face_encodings(frame, face_locations)
-    if face_locations:
-        (top, right, bottom, left), face_encoding=zip(face_locations, face_encodings)[0]
-        if os.path.exists("img/face_recognition/operator1.jpg") and face_recognition.face_encodings(face_recognition.load_image_file("img/face_recognition/operator1.jpg")):
-            print(os.path.exists("img/face_recognition/operator1.jpg"))
-            #print(face_recognition.load_image_file("img/face_recognition/operator1.jpg"))[0])
-        # 在这个视频帧中循环遍历每个人脸
-        #for (top, right, bottom, left), face_encoding in zip(face_locations, face_encodings):
-            total_face_encoding.append(face_recognition.face_encodings(face_recognition.load_image_file("img/face_recognition/operator1.jpg"))[0])
-            
-            print(str(right))
-            v=total_face_encoding[0]
-            match = face_recognition.compare_faces([v], face_encoding, tolerance=0.5)
-            if match[0]:
-                matchNum=matchNum+1
-            else:
-                matchNum=0
-                # 画出一个框，框住脸
-        print(str(matchNum))
-        w=right-left
-        h=bottom-top
-        cv2.imwrite("img/face_recognition/operator1.jpg",frame[top:bottom,left:right])#frame[y:y+h, x:x+w]
+    total=os.listdir(path)
+    fileNum = len(total)
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  # 转换灰色
 
-matchNum=0
-circle=0
-while (matchNum<5 and circle<maxCircle):
-    circle=circle+1
-    ret, frame = cap.read()
-    # 发现在视频帧所有的脸和face_enqcodings
-    face_locations = face_recognition.face_locations(frame)
-    face_encodings = face_recognition.face_encodings(frame, face_locations)
-    if face_locations:
-        (top, right, bottom, left), face_encoding=zip(face_locations, face_encodings)[0]
-        if os.path.exists("img/face_recognition/operator2.jpg") and face_recognition.face_encodings(face_recognition.load_image_file("img/face_recognition/operator2.jpg")):
-            print(os.path.exists("img/face_recognition/operator2.jpg"))
-            #print(face_recognition.load_image_file("img/face_recognition/operator1.jpg"))[0])
-        # 在这个视频帧中循环遍历每个人脸
-        #for (top, right, bottom, left), face_encoding in zip(face_locations, face_encodings):
-            total_face_encoding.append(face_recognition.face_encodings(face_recognition.load_image_file("img/face_recognition/operator1.jpg"))[0])
-            
-            print(str(right))
+    runTime=round(time.time()-startTime,2)
+    waitTime=round(takeTime[fileNum]-runTime,2)
+    text=str(runTime)
 
-            v=total_face_encoding[0]
-            match = face_recognition.compare_faces([v], face_encoding, tolerance=0.5)
-            if match[0]:
-                matchNum=matchNum+1
-            else:
-                matchNum=0
-                # 画出一个框，框住脸
-        print(str(matchNum))
-        w=right-left
-        h=bottom-top
-        cv2.imwrite("img/face_recognition/operator2.jpg",frame[top-h/4:bottom+h/4,left:right])#frame[y:y+h, x:x+w]
-    #cv2.imshow('Video', frame)
-    #if cv2.waitKey(1) & 0xFF == ord('q'):
-    #   break
-
-cap.release()
-cv2.destroyAllWindows()
+    cv2.putText(frame,"Time "+text, (10,100),cv2.FONT_HERSHEY_COMPLEX, 2.0, (0,0, 255), 2)#FONT_HERSHEY_SIMPLEX
+    classifier = cv2.CascadeClassifier("./haarcascade_frontalface_default.xml")
+    #img2 = np.zeros((img.shape[0],img.shape[1],3), np.uint8) 
+    color = (0, 255, 0)  # 定义绘制颜色
+    # 调用识别人脸
+    faceRects = classifier.detectMultiScale(
+        gray, scaleFactor=1.2, minNeighbors=3, minSize=(32, 32))
+    if len(faceRects)==1:#and runTime<takeTime[4]:  # 大于0则检测到人脸
+        #print(faceRects)
+        #print(type(faceRects))
+        x, y, w, h = faceRects[0]
+        roi_color = frame[y:y+h, x:x+w]
+        # 框出人脸
+        y=y-h/4
+        h=h+h/3
+        cv2.rectangle(frame, (x, y), (x + w, y +h), color, 2)
+        waitTime=round(time.time()-startTime-takeTime[0],2)
+        #text=str(runTime)
+        if runTime<takeTime[fileNum]:
+            runTime=round(time.time()-startTime,2)
+            waitTime=round(takeTime[fileNum]-runTime,2)
+            text=str(waitTime)
+            cv2.putText(frame,"Wait "+text, (x,y - 6), cv2.FONT_HERSHEY_TRIPLEX, 2.0, (0,0,0), 1)
+        elif runTime<takeTime[fileNum+1] and runTime>takeTime[fileNum] and fileNum<3:
+            runTime=round(time.time()-startTime,2)
+            waitTime=round(takeTime[fileNum]-runTime,2)
+            #text=str(waitTime)
+            cv2.imwrite('img/face_recognition/operator'+str(fileNum+1)+'.jpg',frame[y:y+h, x:x+w])
+            cv2.putText(frame,"Second "+str(waitTime), (x + 6,y - 6), cv2.FONT_HERSHEY_TRIPLEX, 2.0, (255,255, 0), 1)
+            print(str(fileNum+1)+" "+text)
+            cv2.imshow("image",frame)
+            time.sleep(0.5)
+        elif fileNum<3:
+            #text=str(runTime)
+            cv2.imwrite('img/face_recognition/operator'+'.jpg',frame[y:y+h, x:x+w])
+            cv2.putText(frame,"Bad", (x + 6,y - 6), cv2.FONT_HERSHEY_TRIPLEX, 1.0, (255,0, 0), 1)
+            break
+    elif runTime<takeTime[4]:
+        pass
+    else:
+        break
+    cv2.imshow("image", frame)  # 显示图像
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        #cv2.imwrite('./img/face_recognition/operator'+str(n)+'.png',frame[])
+        break
 
 
 
 # 程序结束时间
 endTime = time.time()
+print((endTime - startTime))
+
 cap.release()
 cv2.destroyAllWindows()
 
