@@ -43,6 +43,10 @@ emotion_window = []
 #parser.add_argument('--img', type=str, default = '../outputs/1.jpg')
 #args = parser.parse_args()
 video_capture = cv2.VideoCapture(0)
+<<<<<<< HEAD
+=======
+video_capture.get(CV_CAP_PROP_FPS)
+>>>>>>> js
 
 while True:
     bgr_image= video_capture.read()[1]
@@ -66,7 +70,11 @@ while True:
 
         face_d=np.sqrt(s_img/s_face)*min_d
         #print(math.sin(alpha))
+<<<<<<< HEAD
         face_h=face_d/math.tan(alpha)*dif*+base_h
+=======
+        face_h=face_d/math.tan(alpha)*dif+base_h
+>>>>>>> js
         result="unknown"
         print(face_h)
         if face_h>1.47:
