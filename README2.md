@@ -14,7 +14,7 @@ Matching
 
  
  
-##PlanA
+## PlanA
 
 
 ### Run demos:
@@ -55,12 +55,12 @@ e.g.
 
 
  
-##PlanB
+## PlanB
  
 Based on faceai
 
  
-###Demo for the face-recog contest:
+### Demo for the face-recog contest:
 
 > python3 fr.py
 
