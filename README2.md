@@ -12,18 +12,27 @@ Matching
 
 ## Instructions
 
-
+ 
+ 
 ##PlanA
 
+
 ### Run demos:
+
 > python3 video_emotion_color_demo.py
+
 > python3 image_gradcam_demo.py
+
 > python3 video_posture_detect_demo.py
+
 > python3 image_emotion_gender_demo.py <image_path>
+
 e.g.
+
 > python3 image_emotion_gender_demo.py ../images/test_img.jpg
 
 ### Demo for the face-recog contest ( remain to be developed )
+
 > python3 video_face_info_detect.py   
 
 
