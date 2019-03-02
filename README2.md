@@ -14,10 +14,10 @@ Matching
 
  
  
-## PlanA
+### PlanA
 
 
-### Run demos:
+#### Run demos:
 
 > python3 video_emotion_color_demo.py
 
@@ -31,12 +31,12 @@ e.g.
 
 > python3 image_emotion_gender_demo.py ../images/test_img.jpg
 
-### Demo for the face-recog contest ( remain to be developed )
+#### Demo for the face-recog contest ( remain to be developed )
 
 > python3 video_face_info_detect.py   
 
 
-### To train previous/new models for emotion classification:
+#### To train previous/new models for emotion classification:
 
 * Download the fer2013.tar.gz file from [here](https://www.kaggle.com/c/challenges-in-representation-learning-facial-expression-recognition-challenge/data)
 * Move the downloaded file to the datasets directory inside this repository.
@@ -44,7 +44,7 @@ e.g.
 * Run the train_emotion_classification.py file
 > python3 train_emotion_classifier.py
 
-### To train previous/new models for gender classification:
+#### To train previous/new models for gender classification:
 * Download the imdb_crop.tar file from [here](https://data.vision.ee.ethz.ch/cvl/rrothe/imdb-wiki/) (It's the 7GB button with the tittle Download faces only).
 * Move the downloaded file to the datasets directory inside this repository.
 * Untar the file:
@@ -55,12 +55,12 @@ e.g.
 
 
  
-## PlanB
+### PlanB
  
 Based on faceai
 
  
-### Demo for the face-recog contest:
+#### Demo for the face-recog contest:
 
 > python3 fr.py
 
