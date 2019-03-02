@@ -54,12 +54,12 @@ e.g.
 
 
 
-
+ 
 ##PlanB
-
+ 
 Based on faceai
 
-
+ 
 ###Demo for the face-recog contest:
 
 > python3 fr.py
